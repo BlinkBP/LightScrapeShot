@@ -15,10 +15,12 @@ def getImageUrl(url):
     driver = webdriver.Firefox()
     driver.set_window_position(10000,0) #let's move the browser window out of the way
     driver.set_page_load_timeout(5) #let's not wait for a full page to load
+    print("Loading the website. This will take a few seconds.")
     try:
         driver.get(url)
     except: #timeout throws an exception which we have to ignore
         pass
+    print("Scraping the image url.")
     #page is loaded; let's switch to the iframe and extract our url
     frame = driver.find_element_by_id('image-iframe')
     driver.switch_to_frame(frame)
