@@ -1,33 +1,24 @@
-import pyperclip
+from urllib.request import urlopen, Request
+from bs4 import BeautifulSoup
 import re
-from selenium import webdriver
+import pyperclip
 import time
 
 seconds = 2
 
 def checkUrl(url):
-    r = re.compile('http://p*')
+    r = re.compile('http[s]?://p*')
     if (r.match(url) != None):
         return True
     return False
 
 def getImageUrl(url):
-    driver = webdriver.Firefox()
-    driver.set_window_position(10000,0) #let's move the browser window out of the way
-    driver.set_page_load_timeout(5) #let's not wait for a full page to load
-    print("Loading the website. This will take a few seconds.")
-    try:
-        driver.get(url)
-    except: #timeout throws an exception which we have to ignore
-        pass
-    print("Scraping the image url.")
-    #page is loaded; let's switch to the iframe and extract our url
-    frame = driver.find_element_by_id('image-iframe')
-    driver.switch_to_frame(frame)
-    imgUrl = driver.find_element_by_id('image-img').get_attribute('src')
-    driver.quit()
+    req = Request(url, headers={'User-Agent' : "LightScrapeShot"})
+    response = urlopen(req)
+    html = response.read()
+    soup = BeautifulSoup(html, 'html.parser')
+    imgUrl = soup.find('img', id='screenshot-image')['src']
     return imgUrl
-
 url = pyperclip.paste()
 if (url != None):
     if (checkUrl(url)):
